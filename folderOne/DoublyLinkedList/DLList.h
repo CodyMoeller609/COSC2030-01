@@ -8,16 +8,18 @@ public:
     Node* last;
 };
 
-class DLLinkedList {
+class DLList {
 private:
 	Node* head;
     Node* tail;
 
 public:
-	DLinkedList();
-	void insert(Node*);
-	void del();
+	DLList();
+	void prepend(Node*);
+    void append(Node*);
+	void delHead();
+    void delTail();
 	void traverse();
-	~DLLinkedList();
+	~DLList();
 };
 #endif

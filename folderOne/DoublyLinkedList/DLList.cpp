@@ -1,18 +1,24 @@
 #include <iostream>
-#include "DLLinkedList.h"
+#include "DLList.h"
 
 using namespace std;
 
-LinkedList::LinkedList() {
+DLList::DLList() {
 	head = nullptr;
+    tail = nullptr;
 }
 
-void LinkedList::insert(Node* x) {
+void DLList::prepend(Node* x) {
 	x->next = head;
 	head = x;
 }
 
-void LinkedList::del() {
+void DLList::append(Node* x) {
+    x->last = tail;
+	tail = x;
+}
+
+void DLList::delHead() {
     if (head == nullptr) {
         cout << "The Linked List is empty" << endl;
     }
@@ -23,7 +29,18 @@ void LinkedList::del() {
 	}
 }
 
-void LinkedList::traverse() {
+void DLList::delTail() {
+    if (head == nullptr) {
+        cout << "The Linked List is empty" << endl;
+    }
+	else {
+		Node* temp = tail;
+		tail = tail->last;
+		delete temp;
+	}
+}
+
+void DLList::traverse() {
 	if (head == nullptr) {
 		cout << "The Linked List is empty" << endl;
 	}
@@ -37,7 +54,7 @@ void LinkedList::traverse() {
 	}	
 }		
 
-LinkedList::~LinkedList() {
+DLList::~DLList() {
     Node* curr = head;
     while (curr != nullptr) { 
 	Node* temp = curr;
