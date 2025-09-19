@@ -5,7 +5,7 @@ class Node {
 public:
 	int data;
 	Node* next;	
-    Node* last;
+    Node* prev;
 };
 
 class DLList {
@@ -19,6 +19,8 @@ public:
     void append(Node*);
 	void delHead();
     void delTail();
+	void headPeek();
+	void tailPeek();
 	void traverse();
 	~DLList();
 };
