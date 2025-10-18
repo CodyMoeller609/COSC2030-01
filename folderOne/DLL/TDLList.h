@@ -26,7 +26,7 @@ public:
     void prepend(const T& value) {
         Node* x = new Node(value);
         if(head==nullptr){
-            tail = x;
+            tail=x;
         }else{
             head->prev = x;
             x->next = head;
