@@ -15,6 +15,7 @@ public:
 class BST {
     public:
         BST();
+        Node* searchRecursively(Node*, int);
         Node* search(int);
         void inorder(Node*);
         void preorder(Node*);
@@ -22,11 +23,13 @@ class BST {
         void traversal(string);
         Node* locateParent(Node*, int);
         void insert(int);
+        void transplant(Node*, Node*);
         void Delete(int);
         int minimum();
         int maximum();
         Node* inOrderSuccessor(int);
         Node* inOrderPredecessor(int);
+        void destroyTree(Node*);
         ~BST();
     private: 
         Node* root;

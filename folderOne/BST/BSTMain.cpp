@@ -11,6 +11,7 @@ int main () {
     string travOrd;
 
     BST* L = new BST();
+    Node* p; // Node used for several cases. Notably to check if a returned node is a nullptr to prevent errors.
 
     while(cmd != 9){
         cout << "-----------------------" << endl;
@@ -31,7 +32,13 @@ int main () {
             case 1:
                 cout << "Search para que?" << endl;
                 cin >> value;
-                L->search(value);
+                p = L->search(value);
+                if(p == nullptr){
+                    cout << p->key << " was not found!" << endl;
+                }else{
+                    cout << p->key << " was found at address: " << p << endl;
+                }
+                p = nullptr;
                 break;
             case 2:
                 travOrd = ""; // Clears the variable before use
@@ -55,20 +62,32 @@ int main () {
                 L->Delete(value);
                 break;
             case 5: 
-                L->maximum();
+                cout << "The minimum value in the tree is: " << L->minimum() << endl;
                 break;
             case 6: 
-                L->minimum();
+                cout << "The maximum value in the tree is: " << L->maximum() << endl;
                 break;
             case 7: 
                 cout << "Which number would you like to find the inorder successor for?";
                 cin >> value;
-                cout << "The inorder successor is: " << L->inOrderSuccessor(value) << endl;
+                p = L->inOrderSuccessor(value);
+                if(p == nullptr){
+                    cout << "There is no successor. " << endl;
+                }else{
+                    cout << "The inorder successor is: " << p->key << endl;
+                }
+                p = nullptr;
                 break;
             case 8: 
-                cout << "Which number would you like to find the inorder successor for?";
+                cout << "Which number would you like to find the inorder predecessor for?";
                 cin >> value;
-                cout << "The inorder predecessor is: " << L->inOrderPredecessor(value) << endl;
+                p = L->inOrderPredecessor(value);
+                if(p == nullptr){
+                    cout << "There is no predecessor. " << endl;
+                }else{
+                    cout << "The inorder predecessor is: " << p->key << endl;
+                }
+                p = nullptr;
                 break;
             case 9: break;
             default: cout << "Enter a valid choice" << endl;

@@ -5,11 +5,31 @@ BST::BST(){
     root = nullptr;
 }
 
-Node* BST::search(int){
+// Recursive helper function called by search. Having another function for this allows me to pass a node arguement (needed for recursion),  
+// but still follow the required formatting with the main call of the function.
+Node* BST::searchRecursively(Node* currNode, int key){
+    if(currNode == nullptr){
+        cout << "There is no Tree!" << endl;
+    }else{
+        if(currNode->key == key){
+            return currNode;
+        }
+        if(currNode->lchild != nullptr && (key < currNode->key)){
+            return searchRecursively(currNode->lchild, key);
+        }
+        if(currNode->rchild != nullptr){
+            return searchRecursively(currNode->rchild, key);
+        }
+    }
     return nullptr;
 }
 
-// Recursive function called by traversal to traverse with inorder methodology - FINISHED
+// Calls a recursive function to search for and return the node for a given key
+Node* BST::search(int key){
+    return searchRecursively(root, key);;
+}
+
+// Recursive helper function called by traversal to traverse with inorder methodology
 void BST::inorder(Node* currNode){
     if(currNode == nullptr){
         cout << "There is no Tree!" << endl;
@@ -23,7 +43,7 @@ void BST::inorder(Node* currNode){
         }
     }
 }
-// Recursive function called by traversal to traverse with preorder methodology - UNFINISHED
+// Recursive helper function called by traversal to traverse with preorder methodology
 void BST::preorder(Node* currNode){
     if(currNode == nullptr){
         cout << "There is no Tree!" << endl;
@@ -37,7 +57,7 @@ void BST::preorder(Node* currNode){
         }
     }
 }
-// Recursive function called by traversal to traverse with postorder methodology - UNFINISHED
+// Recursive helper function called by traversal to traverse with postorder methodology
 void BST::postorder(Node* currNode){
     if(currNode == nullptr){
         cout << "There is no Tree!" << endl;
@@ -112,57 +132,155 @@ void BST::insert(int key){
     }
 }
 
+// Helper function to replace one subtree as a child of its parent with another
+void BST::transplant(Node* u, Node* v) {
+    if (u->parent == nullptr) { // u is the root
+        root = v;
+    } else if (u == u->parent->lchild) {
+        u->parent->lchild = v;
+    } else {
+        u->parent->rchild = v;
+    }
+    if (v != nullptr) {
+        v->parent = u->parent;
+    }
+}
 
-void BST::Delete(int key){
+void BST::Delete(int key) {
+    Node* target = search(key);
+    if (target == nullptr) {
+        cout << "Key " << key << " not found." << endl;
+        return;
+    }
 
+    // Case 1: no left child
+    if (target->lchild == nullptr) {
+        transplant(target, target->rchild);
+        delete target;
+        target = nullptr;
+    }
+    // Case 2: no right child
+    else if (target->rchild == nullptr) {
+        transplant(target, target->lchild);
+        delete target;
+        target = nullptr;
+    }
+    // Case 3: two children
+    else {
+        Node* successor = inOrderSuccessor(target->key);
+
+        if (successor->parent != target) {
+            // Replace successor with its right child
+            transplant(successor, successor->rchild);
+            successor->rchild = target->rchild;
+            if (successor->rchild != nullptr) {
+                successor->rchild->parent = successor;
+            }
+        }
+
+        transplant(target, successor);
+        successor->lchild = target->lchild;
+        if (successor->lchild != nullptr) {
+            successor->lchild->parent = successor;
+        }
+
+        delete target;
+        target = nullptr;
+    }
 }
 
 int BST::minimum(){
+    if(root == nullptr){
+        cout << "There is no Tree!" << endl;
+    }else{
+        Node* currNode = root;
+        while(currNode->lchild != nullptr){
+            currNode = currNode->lchild;
+        }
+        return currNode->key;
+    }
     return 0;
 }
 
 int BST::maximum(){
+    if(root == nullptr){
+        cout << "There is no Tree!" << endl;
+    }else{
+        Node* currNode = root;
+        while(currNode->rchild != nullptr){
+            currNode = currNode->rchild;
+        }
+        return currNode->key;
+    }
     return 0;
 }
 
 Node* BST::inOrderSuccessor(int key){
+        Node* x = search(key);
+
+    if(x != nullptr){
+        if(x->rchild == nullptr){ // If the node has no right child, the successor is an ancestor
+            if(x->parent == nullptr){
+                return nullptr;
+            }else{ 
+                while(x->parent->key < x->key){
+                    x = x->parent;
+                    if(x->parent == nullptr){
+                        return nullptr;
+                    }
+                }
+                return x->parent;
+            }
+        }
+        // if the node does have a right child, travserse left from that child until the leaf is reached. return the leaf
+        Node* currNode = x->rchild;
+        while(currNode->lchild != nullptr){
+            currNode = currNode->lchild;
+        }
+        return currNode;
+    }
     return nullptr;
 }
 
 Node* BST::inOrderPredecessor(int key){
+
+    Node* x = search(key);
+
+    if(x != nullptr){
+        if(x->lchild == nullptr){ // If the node has no left child, the predecessor is an ancestor
+            if(x->parent == nullptr){
+                return nullptr;
+            }else{ 
+                while(x->parent->key > x->key){
+                    x = x->parent;
+                    if(x->parent == nullptr){
+                        return nullptr;
+                    }
+                }
+                return x->parent;
+            }
+        }
+        // if the node does have a left child, travserse right from that child until the leaf is reached. return the leaf
+        Node* currNode = x->lchild;
+        while(currNode->rchild != nullptr){
+            currNode = currNode->rchild;
+        }
+        return currNode;
+    }
     return nullptr;
 }
 
-BST::~BST(){
-    
+// Helper function for recursive deletion
+void BST::destroyTree(Node* currNode) {
+    if (currNode == nullptr) return;
+
+    destroyTree(currNode->lchild);
+    destroyTree(currNode->rchild);
+
+    delete currNode;
 }
-
-/*
-        Node* locateNewLeaf(Node* node, T leaf){
-            if (node->key > leaf) {
-                if (node->lChild == nullptr) {
-                    return node->lChild;
-                } else {
-                    locateNewLeaf(node->lChild, leaf);
-                }
-            } else if (node->key < leaf){
-                if(node->rChild == nullptr){
-                    return node->rChild;
-                }else{
-                    locateNewLeaf(node->rChild, leaf);
-                }
-            }
-            Node* nullNode;
-            return nullNode;
-        }
-
-
-        void leafInsert(T key){
-            Node* val = new Node(key);
-            if(root==nullptr){
-                root=val;
-            }else{
-
-            }
-        }
-*/
+ 
+BST::~BST() {
+    destroyTree(root);
+    root = nullptr;
+}
