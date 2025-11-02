@@ -1,17 +1,17 @@
 #include <iostream>
-#include "AVL.h"
+#include "RB.h"
 
-AVL::AVL(){
+RB::RB(){
     root = nullptr;
 }
 
-int AVL::getHeight(Node* Q){
+int RB::getHeight(Node* Q){
     return Q->height;
 }
 
 // Recursive helper function called by search. Having another function for this allows me to pass a node arguement (needed for recursion),  
 // but still follow the required formatting with the main call of the function.
-Node* AVL::searchRecursively(Node* currNode, int key){
+Node* RB::searchRecursively(Node* currNode, int key){
     if(currNode == nullptr){
         cout << "There is no Tree!" << endl;
     }else{
@@ -29,12 +29,12 @@ Node* AVL::searchRecursively(Node* currNode, int key){
 }
 
 // Calls a recursive function to search for and return the node for a given key
-Node* AVL::search(int key){
+Node* RB::search(int key){
     return searchRecursively(root, key);
 }
 
 // Recursive helper function called by traversal to traverse with inorder methodology
-void AVL::inorder(Node* currNode){
+void RB::inorder(Node* currNode){
     if(currNode == nullptr){
         cout << "There is no Tree!" << endl;
     }else{
@@ -48,7 +48,7 @@ void AVL::inorder(Node* currNode){
     }
 }
 // Recursive helper function called by traversal to traverse with preorder methodology
-void AVL::preorder(Node* currNode){
+void RB::preorder(Node* currNode){
     if(currNode == nullptr){
         cout << "There is no Tree!" << endl;
     }else{
@@ -62,7 +62,7 @@ void AVL::preorder(Node* currNode){
     }
 }
 // Recursive helper function called by traversal to traverse with postorder methodology
-void AVL::postorder(Node* currNode){
+void RB::postorder(Node* currNode){
     if(currNode == nullptr){
         cout << "There is no Tree!" << endl;
     }else{
@@ -76,7 +76,7 @@ void AVL::postorder(Node* currNode){
     }
 }
 
-void AVL::traversal(string order){
+void RB::traversal(string order){
     Node* currNode = root;
     if(order == "inorder"){
         inorder(root);
@@ -89,7 +89,7 @@ void AVL::traversal(string order){
     }
 }
 
-void AVL::rotateR(Node* Q){
+void RB::rotateR(Node* Q){
     Node* mid = Q->lchild; // Store the left child of node Q as a variable
     Q->lchild = mid->rchild; // Set Q's new left child to mid's old right child
     mid->rchild = Q; // Set mid's right child as Q
@@ -101,7 +101,7 @@ void AVL::rotateR(Node* Q){
 }
 
 
-void AVL::rotateL(Node* Q){
+void RB::rotateL(Node* Q){
     Node* mid = Q->rchild; // Store the right child of node Q as a variable
     Q->rchild = mid->lchild; // Set Q's new right child to mid's old left child
     mid->lchild = Q; // Set mid's left child as Q
@@ -112,7 +112,7 @@ void AVL::rotateL(Node* Q){
     }
 }
 
-Node* AVL::locateParent(Node* currNode, int key){
+Node* RB::locateParent(Node* currNode, int key){
     cout << "locateParent called" << endl;
     cout << "current node:" << currNode->key << endl;
     cout << "key: " << key << endl;
@@ -139,8 +139,8 @@ Node* AVL::locateParent(Node* currNode, int key){
     cout << "big problem" << endl;
     return nullptr;
 }
-
-int AVL::BF(Node* Q){ // returns the balance factor of the node passed
+/*
+int RB::BF(Node* Q){ // returns the balance factor of the node passed
     int lSum = -1;
     int rSum = -1;
     Node* currNode = Q->lchild;
@@ -154,29 +154,98 @@ int AVL::BF(Node* Q){ // returns the balance factor of the node passed
         currNode = currNode->rchild;
     }
     return lSum+rSum;
+}*/
+
+int RB::searchForViolations(Node* victim){
+    //Red node with red parent violation
+    if(victim->parent->color == RED){
+        return 1;
+    }
+
+    //Black height violation
+    if(1==1){
+        cout<<"black height violation"<<endl;
+    }
+
+    return -1;
 }
 
-void AVL::insert(int key){
-    Node* x = new Node();
-    x->key = key;
-    if(root==nullptr){
-        root = x;
-        cout << x->key << " is now the root" << endl;
-    } else {
-        Node* parent = locateParent(root, key);
-        x->parent = parent;
-        if(x->key > parent->key){
-            parent->rchild = x;
-            cout << x->key << " is now the rchild of " << parent->key << endl;
-        }else{
-            parent->lchild = x;
-            cout << x->key << " is now the lchild of " << parent->key << endl;
+void RB::fixViolations(Node* victim, Node* parent, Node* gparent, Node* uncle){
+    if(parent->color != BLACK){
+        if((parent->color == RED) && (uncle->color == RED)){ // Case two: parent and uncle are red
+            cout<<"case 2"<<endl;
+            parent->color = BLACK;
+            uncle->color = BLACK;
+            gparent->color = RED;
         }
+        else if(1==1){ // Case three:
+            cout<<"case 3"<<endl;
+        }
+        if(parent != nullptr){ // make recursive call if the current node is not the root
+            if(parent == gparent->lchild){ fixViolations(gparent, gparent->parent, gparent->parent->parent, gparent->parent->parent->rchild);}
+            else{ fixViolations(gparent, gparent->parent, gparent->parent->parent, gparent->parent->parent->lchild);}
+        }
+    /*
+    while(searchForViolations(victim) == 1){ // fix if the parent is red
+        Node* parent = victim->parent;
+        Node* gparent = parent->parent;
+        if(parent == gparent->lchild){
+            Node* uncle = gparent->rchild;
+        }else{
+            Node* uncle = gparent->lchild;
+        }
+
+    }*/
     }
 }
 
+void RB::insert(int key){
+    Node* x = new Node();
+    Node* Parent = nullptr;
+    x->color = RED;
+    x->key = key;
+    x->lchild = nullptr;
+    x->rchild = nullptr;
+    if(root==nullptr){
+        root = x;
+        root->parent = nullptr;
+        cout << x->key << " is now the root" << endl;
+    }else {
+        Parent = locateParent(root, key);
+        x->parent = Parent;
+        if(x->key > Parent->key){
+            Parent->rchild = x;
+            cout << x->key << " is now the rchild of " << Parent->key << endl;
+        }else{
+            Parent->lchild = x;
+            cout << x->key << " is now the lchild of " << Parent->key << endl;
+        }
+    }
+
+    cout<<" HELLO     HELLO     : Parent==  "<< Parent /*<<"  Parent->parent==  "<< Parent->parent->key*/ << endl;
+    // Now that the node has been inserted, fix the violations it caused.
+    // Define surrounding nodes as variables
+    if(Parent != nullptr){
+        cout<<"Parent != nullptr"<<endl;
+        Node* gparent = nullptr;
+        if(Parent->parent != 0){
+            gparent = Parent->parent;
+        }
+        Node* uncle;
+        if(Parent == gparent->lchild){
+            uncle = gparent->rchild;
+        }else{
+            uncle = gparent->lchild;
+        }
+    cout<<"Fix violations is running"<<endl;
+    fixViolations(x, Parent, gparent, uncle);
+    }
+
+    root->color = BLACK; // Root should always be black
+}
+
 // Helper function to replace one subtree as a child of its parent with another
-void AVL::transplant(Node* one, Node* two) {
+void RB::transplant(Node* one, Node* two) {
     if (one->parent == nullptr) { // if node one is the root
         root = two;
     } else if (one == one->parent->lchild) {
@@ -189,7 +258,7 @@ void AVL::transplant(Node* one, Node* two) {
     }
 }
 
-void AVL::Delete(int key) {
+void RB::Delete(int key) {
     Node* target = search(key);
     if (target == nullptr) {
         cout << "Key " << key << " not found." << endl;
@@ -232,7 +301,7 @@ void AVL::Delete(int key) {
     }
 }
 
-int AVL::minimum(){
+int RB::minimum(){
     if(root == nullptr){
         cout << "There is no Tree!" << endl;
     }else{
@@ -245,7 +314,7 @@ int AVL::minimum(){
     return 0;
 }
 
-int AVL::maximum(){
+int RB::maximum(){
     if(root == nullptr){
         cout << "There is no Tree!" << endl;
     }else{
@@ -258,7 +327,7 @@ int AVL::maximum(){
     return 0;
 }
 
-Node* AVL::inOrderSuccessor(int key){
+Node* RB::inOrderSuccessor(int key){
         Node* x = search(key);
 
     if(x != nullptr){
@@ -285,7 +354,7 @@ Node* AVL::inOrderSuccessor(int key){
     return nullptr;
 }
 
-Node* AVL::inOrderPredecessor(int key){
+Node* RB::inOrderPredecessor(int key){
 
     Node* x = search(key);
 
@@ -314,7 +383,7 @@ Node* AVL::inOrderPredecessor(int key){
 }
 
 // Helper function for recursive deletion
-void AVL::destroyTree(Node* currNode) {
+void RB::destroyTree(Node* currNode) {
     if (currNode == nullptr) {
         return;
     }
@@ -324,8 +393,45 @@ void AVL::destroyTree(Node* currNode) {
 
     delete currNode;
 }
+
+  // Below is a visualizer that I had ChatGPT make for me. I did not use AI for any 
+  // coding required in the project. This is simply to help with visualization and 
+  // debugging.
+
+#include <iomanip> // for setw()
+
+// Helper to print the tree sideways with color
+void RB::printTreeHelper(Node* currNode, int space) {
+    const int INDENT = 6; // controls spacing between levels
+    if (currNode == nullptr){
+        return;
+    }
+    space += INDENT;
+    printTreeHelper(currNode->rchild, space); // print r child
+    cout << endl;
+
+    for (int i = INDENT; i < space; i++){
+        cout << " ";
+    } 
+    string colorStr = (currNode->color == RED) ? "R" : "B";
+    cout << currNode->key << "(" << colorStr << ")"; //print curr node
+
+    printTreeHelper(currNode->lchild, space); // print l child
+}
+
+// Public interface for printing the full tree
+void RB::printTree() {
+    if (root == nullptr) {
+        cout << "Tree is empty!" << endl;
+        return;
+    }
+    cout << "Current Tree Structure:" << endl;
+    printTreeHelper(root, 0);
+    cout << endl;
+}
+// End of the visualiser code that ChatGPT made me
  
-AVL::~AVL() {
+RB::~RB() {
     destroyTree(root);
     root = nullptr;
 }    
