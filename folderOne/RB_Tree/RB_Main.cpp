@@ -11,7 +11,7 @@ int main () {
     string travOrd;
 
     RB* L = new RB();
-    Node* p; // Node used for several cases. Notably to check if a returned node is a nullptr to prevent errors.
+    Node* p; // Node p is used for several cases. Notably to check if a returned node is a nullptr to prevent errors.
 
     while(cmd != 9){
         cout << "-----------------------" << endl;
@@ -27,10 +27,12 @@ int main () {
 		cout << "7 - Print the Inorder Successor of a Value" << endl;
 		cout << "8 - Print the Inorder Predecessor of a Value" << endl;
         cout << "9 - Exit the Program" << endl;
+        cout << "Choice: ";
+        // take input and act accordingly
         cin >> cmd;
         switch(cmd) {
-            case 1:
-                cout << "Search para que?" << endl;
+            case 1: // Search
+                cout << "Search for which number?" << endl;
                 cin >> value;
                 p = L->search(value);
                 if(p == nullptr){
@@ -40,7 +42,7 @@ int main () {
                 }
                 p = nullptr;
                 break;
-            case 2:
+            case 2: // Traverse
                 travOrd = ""; // Clears the variable before use
                 // While loop makes sure the the user enters a valid input for the command.
                 while((travOrd != "inorder") && (travOrd != "preorder") && (travOrd != "postorder")){
@@ -51,23 +53,23 @@ int main () {
 
                 L->traversal(travOrd);
                 break;
-            case 3:
+            case 3: // Insert
                 cout << "What value would you like to insert in the tree?" << endl;
                 cin >> value;
                 L->insert(value);
                 break;
-            case 4:
+            case 4: // Delete
                 cout << "What value would you like to delete from the tree?" << endl;
                 cin >> value;
                 L->Delete(value);
                 break;
-            case 5: 
+            case 5: // Print Minimum
                 cout << "The minimum value in the tree is: " << L->minimum() << endl;
                 break;
-            case 6: 
+            case 6: // Print Maximum
                 cout << "The maximum value in the tree is: " << L->maximum() << endl;
                 break;
-            case 7: 
+            case 7: // Print the inorder successor
                 cout << "Which number would you like to find the inorder successor for?";
                 cin >> value;
                 p = L->inOrderSuccessor(value);
@@ -78,7 +80,7 @@ int main () {
                 }
                 p = nullptr;
                 break;
-            case 8: 
+            case 8:  // Print the inorder predecessor
                 cout << "Which number would you like to find the inorder predecessor for?";
                 cin >> value;
                 p = L->inOrderPredecessor(value);
@@ -89,13 +91,15 @@ int main () {
                 }
                 p = nullptr;
                 break;
-            case 9: break;
-            case 10: 
+            case 9: break; // exit the program
+
+            // Cases 10 & 11 exist for debugging, so they are not displayed to the user
+            case 10: // Rotate Right
                 cout << "Which number would you like to rotate about?";
                 cin >> value;
                 L->rotateR(L->search(value));
                 break;
-            case 11: 
+            case 11: // Rotate Left
                 cout << "Which number would you like to rotate about?";
                 cin >> value;
                 L->rotateL(L->search(value));

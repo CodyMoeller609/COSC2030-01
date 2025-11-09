@@ -6,8 +6,10 @@ RB::RB(){
     root = nullptr;
 }
 
+// Search functions
+
 // Recursive helper function called by search. Having another function for this allows me to pass a node arguement (needed for recursion),  
-// but still follow the required formatting with the main call of the function.
+// but not require the user to be concerned with node pointers.
 Node* RB::searchRecursively(Node* currNode, int key){
     if(currNode == nullptr){
         cout << "There is no Tree!" << endl;
@@ -25,10 +27,14 @@ Node* RB::searchRecursively(Node* currNode, int key){
     return nullptr;
 }
 
-// Calls a recursive function to search for and return the node for a given key
+// Calls a recursive function to search for and return the node for a given key. Written as two functions so that the 
+// user must only pass a key and not a node.
 Node* RB::search(int key){
     return searchRecursively(root, key);
 }
+
+
+// Traversal functions
 
 // Recursive helper function called by traversal to traverse with inorder methodology
 void RB::inorder(Node* currNode){
@@ -86,9 +92,10 @@ void RB::traversal(string order){
     }
 }
 
+
 // Rotation functions
 
-void RB::rotateR(Node* Q){
+void RB::rotateR(Node* Q){ // Q is the pivot node
     Node* mid = Q->lchild;
     Q->lchild = mid->rchild;
     if(mid->rchild != nullptr){
@@ -106,7 +113,7 @@ void RB::rotateR(Node* Q){
     Q->parent = mid;
 }
 
-void RB::rotateL(Node* Q){
+void RB::rotateL(Node* Q){ // Q is the pivot node
     Node* mid = Q->rchild;
     Q->rchild = mid->lchild;
     if(mid->lchild != nullptr){
@@ -124,37 +131,29 @@ void RB::rotateL(Node* Q){
     Q->parent = mid;
 }
 
+
+// Insert functions
+
 // This is a helper function for the insert function that recusively locates the parent of the new node
 Node* RB::locateParent(Node* currNode, int key){
-    cout << "locateParent called" << endl;
-    cout << "current node:" << currNode->key << endl;
-    cout << "key: " << key << endl;
     if(currNode->key > key){ 
-        cout << "Searching Left" << endl;
         if(currNode->lchild == nullptr){
-            cout << "Parent found as there is no left child" << endl;
             return currNode;
         }
-        cout << "calls recursively Left" << endl;
         return locateParent(currNode->lchild, key);
     } else {
-        cout << "Searching Right" << endl;
         if(currNode->rchild == nullptr){
-            cout << "Parent found as there is no right child" << endl;
             return currNode;
         }
-        cout << "calls recursively Right" << endl;
         return locateParent(currNode->rchild, key);
     }
-    cout << "big problem" << endl;
     return nullptr;
 }
 
-
 // Red-Black tree specific recursive function for automatically fixing violations caused by insertion.
-void RB::fixViolations(Node* x){
-    while(x != root && x->parent->color == RED){
-        Node* parent = x->parent;
+void RB::fixViolations(Node* currNode){
+    while(currNode != root && currNode->parent->color == RED){
+        Node* parent = currNode->parent;
         Node* gparent = parent->parent;
 
         if(gparent == nullptr) break; // prevent null grandparent crashes
@@ -164,23 +163,20 @@ void RB::fixViolations(Node* x){
 
             // Case 2A: uncle is red
             if(uncle != nullptr && uncle->color == RED){
-                cout << "case 2A: recoloring" << endl;
                 parent->color = BLACK;
                 uncle->color = BLACK;
                 gparent->color = RED;
-                x = gparent;
+                currNode = gparent;
             }
             else {
-                // Case 3A: x is right child of left parent
-                if(x == parent->rchild){
-                    cout << "case 3A: left rotation needed" << endl;
-                    x = parent;
-                    rotateL(x);
-                    parent = x->parent;
+                // Case 3A: currNode is right child of left parent
+                if(currNode == parent->rchild){
+                    currNode = parent;
+                    rotateL(currNode);
+                    parent = currNode->parent;
                     gparent = parent->parent;
                 }
-                // Case 3B: x is left child of left parent
-                cout << "case 3B: right rotation" << endl;
+                // Case 3B: currNode is left child of left parent
                 parent->color = BLACK;
                 gparent->color = RED;
                 rotateR(gparent);
@@ -190,23 +186,20 @@ void RB::fixViolations(Node* x){
 
             // Case 2B: uncle is red
             if(uncle != nullptr && uncle->color == RED){
-                cout << "case 2B: recoloring" << endl;
                 parent->color = BLACK;
                 uncle->color = BLACK;
                 gparent->color = RED;
-                x = gparent;
+                currNode = gparent;
             }
             else {
-                // Case 3C: x is left child of right parent
-                if(x == parent->lchild){
-                    cout << "case 3C: right rotation needed" << endl;
-                    x = parent;
-                    rotateR(x);
-                    parent = x->parent;
+                // Case 3C: currNode is left child of right parent
+                if(currNode == parent->lchild){
+                    currNode = parent;
+                    rotateR(currNode);
+                    parent = currNode->parent;
                     gparent = parent->parent;
                 }
-                // Case 3D: x is right child of right parent
-                cout << "case 3D: left rotation" << endl;
+                // Case 3D: currNode is right child of right parent
                 parent->color = BLACK;
                 gparent->color = RED;
                 rotateL(gparent);
@@ -218,7 +211,7 @@ void RB::fixViolations(Node* x){
 
 void RB::insert(int key){
     Node* x = new Node();
-    Node* Parent = nullptr;
+    Node* parent = nullptr;
     x->color = RED;
     x->key = key;
     x->lchild = nullptr;
@@ -231,14 +224,14 @@ void RB::insert(int key){
         cout << x->key << " is now the root" << endl;
         return;
     }else {
-        Parent = locateParent(root, key);
-        x->parent = Parent;
-        if(x->key > Parent->key){
-            Parent->rchild = x;
-            cout << x->key << " is now the rchild of " << Parent->key << endl;
+        parent = locateParent(root, key);
+        x->parent = parent;
+        if(x->key > parent->key){
+            parent->rchild = x;
+            cout << x->key << " is now the rchild of " << parent->key << endl;
         }else{
-            Parent->lchild = x;
-            cout << x->key << " is now the lchild of " << Parent->key << endl;
+            parent->lchild = x;
+            cout << x->key << " is now the lchild of " << parent->key << endl;
         }
     }
 
@@ -246,7 +239,11 @@ void RB::insert(int key){
     fixViolations(x);
 }
 
-void RB::transplant(Node* one, Node* two) {
+
+// Deletion functions
+
+// Places node 2 in node 1's old location
+void RB::transplant(Node* one, Node* two) { 
     if (one->parent == nullptr) { 
         root = two;
     } else if (one == one->parent->lchild) {
@@ -296,6 +293,9 @@ void RB::Delete(int key) {
         target = nullptr;
     }
 }
+
+
+// Misc fucntions
 
 int RB::minimum(){
     if(root == nullptr){
@@ -374,7 +374,8 @@ Node* RB::inOrderPredecessor(int key){
 }
 
 
-// the next two functions create a visualization of the tree. Primarily for debugging the rotations and such
+// Visualizer functions. Primarily created for debugging purposes
+
 void RB::printTreeHelper(Node* currNode, int space) {
     const int INDENT = 6;
     if (currNode == nullptr){
@@ -392,6 +393,7 @@ void RB::printTreeHelper(Node* currNode, int space) {
     printTreeHelper(currNode->lchild, space);
 }
 
+// Prints a graphic of the tree in ASCII. Prints the tree rotated 90 degrees CCW
 void RB::printTree() {
     if (root == nullptr) {
         cout << "Tree is empty!" << endl;
@@ -401,6 +403,9 @@ void RB::printTree() {
     printTreeHelper(root, 0);
     cout << endl;
 }
+
+
+// Deconstructor functions
 
 void RB::decimateTree(Node* currNode) {
     if (currNode == nullptr) {

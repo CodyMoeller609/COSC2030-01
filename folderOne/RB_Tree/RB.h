@@ -1,5 +1,3 @@
-#ifndef __RB_H__
-#define __RB_H__
 #include <iostream>
 #include <string>
 using namespace std;
@@ -12,7 +10,6 @@ public:
     Node* parent;
 	Node* rchild;	
     Node* lchild;
-    int height;
     Color color;
 };
 
