@@ -1,3 +1,5 @@
+#ifndef __RB_H__
+#define __RB_H__
 #include <iostream>
 #include <string>
 using namespace std;
